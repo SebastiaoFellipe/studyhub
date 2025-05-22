@@ -2,11 +2,53 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pomodoro</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: var(--color-dblue);
+            color: var(--color-bg);
+        }
+
+        .timer {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .controls button {
+            background-color: var(--color-mblue);
+            color: var(--color-bg);
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1rem;
+        }
+
+        .controls button:hover {
+            background-color: var(--color-lblue);
+        }
+    </style>
 </head>
+
 <body>
     <h1>Pomodoro</h1>
+    <div class="timer" id="timer">25:00</div>
+    <div class="controls">
+        <button id="start">Iniciar</button>
+        <button id="pause">Pausar</button>
+        <button id="reset">Zerar</button>
+    </div>
+
+    <script src="pomodoro.js"></script>
 </body>
+
 </html>

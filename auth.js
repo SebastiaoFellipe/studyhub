@@ -23,11 +23,6 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         console.log(`Usuário logado: ${username}`);
         window.location.href = 'tasks.html';
     } else {
-        const passwordOwner = allowedUsers.find(user => user.password === password);
-        if(passwordOwner) {
-            alert(`A senha "${password}" é do usuário ${passwordOwner.username}!`);
-        } else {
-            alert('Credenciais inválidas!');
-        }
+        alert('Credenciais inválidas!');
     }
 });
