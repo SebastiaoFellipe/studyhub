@@ -1,0 +1,24 @@
+:root {
+  /* Light Theme Colors */
+  --color-primary: #2E7060;
+  --color-secondary: #348270;
+  --color-accent: #FF872B;
+
+  --color-background: #FAFAFA;
+  --color-surface: #C4C4C4;
+  --color-text: #30353B;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #30353B;
+    --color-surface: #2E7060;
+    --color-text: #FAFAFA;
+  }
+}
+
+.dark-mode {
+  --color-background: #30353B;
+  --color-surface: #2E7060;
+  --color-text: #FAFAFA;
+}
