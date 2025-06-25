@@ -4,7 +4,9 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import taskRoutes from "./routes/taskRoute.js";
 import authRoutes from "./routes/authRoute.js";
-import noteRoutes from "./routes/noteRoute.js"
+import noteRoutes from "./routes/noteRoute.js";
+import flashcardDeckRoutes from "./routes/flashcardDeckRoute.js";
+import cardRoutes from "./routes/cardRoute.js";
 
 dotenv.config();
 
@@ -17,6 +19,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/decks", flashcardDeckRoutes);
+app.use("/api", cardRoutes);
 
 app.listen(PORT, () => {
     connectDB();
