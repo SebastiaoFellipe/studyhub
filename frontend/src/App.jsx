@@ -1,18 +1,20 @@
-import { Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
-import Task from './pages/Task'
-import Navbar from './components/Navbar'
+import { Routes, Route } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import AuthLayout from './layouts/AuthLayout';
+import Home from './pages/Home';
+import Pomodoro from './pages/Pomodoro';
+import Login from './pages/Auth/Login';
+import SignUp from './pages/Auth/SignUp';
 
 function App() {
   return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/task" element={<Task />} />
-      </Routes>
-    </>
-  )
+    <Routes>
+      <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+      <Route path="/pomodoro" element={<MainLayout><Pomodoro /></MainLayout>} />
+      <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
+      <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
