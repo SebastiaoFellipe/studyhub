@@ -1,50 +1,64 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useTaskStore } from '../store/taskStore.js';
 
 const Task = () => {
-  const [tasks, setTasks] = useState([]);
-  const [task, setTask] = useState({ title: '', id: null });
+  const tasks = useTaskStore((state) => state.tasks);
+  const loading = useTaskStore((state) => state.loading);
+  const error = useTaskStore((state) => state.error);
+  const fetchTasks = useTaskStore((state) => state.fetchTasks);
+  const createTask = useTaskStore((state) => state.createTask);
+  const updateTask = useTaskStore((state) => state.updateTask);
+  const deleteTask = useTaskStore((state) => state.deleteTask);
+
+  const [taskInput, setTaskInput] = useState({ title: '', id: null });
   const [isEditing, setIsEditing] = useState(false);
 
-  // Função para buscar tarefas
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/tasks'); // Ajuste a porta conforme necessário
-      setTasks(response.data.data);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
-  // Efeito para buscar tarefas ao montar o componente
+  // Efeito para buscar tarefas ao montar o componente, usando a ação da store
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [fetchTasks]);
 
   // Função para criar ou atualizar tarefa
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let result;
     if (isEditing) {
-      await axios.put(`http://localhost:5000/api/tasks/${task.id}`, task); // Ajuste a porta conforme necessário
+      result = await updateTask(taskInput.id, { title: taskInput.title });
     } else {
-      await axios.post('http://localhost:5000/api/tasks', task); // Ajuste a porta conforme necessário
+      result = await createTask({ title: taskInput.title });
     }
-    setTask({ title: '', id: null });
-    setIsEditing(false);
-    fetchTasks();
+
+    if (result.success) {
+        setTaskInput({ title: '', id: null });
+        setIsEditing(false);
+    } else {
+        alert(result.message);
+    }
   };
 
   // Função para editar tarefa
   const handleEdit = (task) => {
-    setTask({ title: task.title, id: task._id });
+    setTaskInput({ title: task.title, id: task._id });
     setIsEditing(true);
   };
 
   // Função para deletar tarefa
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/tasks/${id}`); // Ajuste a porta conforme necessário
-    fetchTasks();
+    if (window.confirm("Are you sure you want to delete this task?")) {
+        const result = await deleteTask(id);
+        if (!result.success) {
+            alert(result.message);
+        }
+    }
   };
+
+  if (loading) {
+    return <div>Loading tasks...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>
@@ -52,22 +66,33 @@ const Task = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          value={task.title}
-          onChange={(e) => setTask({ ...task, title: e.target.value })}
+          value={taskInput.title}
+          onChange={(e) => setTaskInput({ ...taskInput, title: e.target.value })}
           placeholder="Task Title"
           required
         />
         <button type="submit">{isEditing ? 'Update Task' : 'Add Task'}</button>
+        {isEditing && (
+            <button type="button" onClick={() => {
+                setTaskInput({ title: '', id: null });
+                setIsEditing(false);
+            }}>Cancel Edit</button>
+        )}
       </form>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task._id}>
-            {task.title}
-            <button onClick={() => handleEdit(task)}>Edit</button>
-            <button onClick={() => handleDelete(task._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <h2>Your Tasks</h2>
+      {tasks.length === 0 ? (
+        <p>No tasks yet. Add one above!</p>
+      ) : (
+        <ul>
+          {tasks.map((task) => (
+            <li key={task._id}>
+              {task.title}
+              <button onClick={() => handleEdit(task)}>Edit</button>
+              <button onClick={() => handleDelete(task._id)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
