@@ -8,11 +8,10 @@ export const protect = async (req, res, next) => {
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("Decoded ID:", decoded.id); // Adicione este log
         req.user = await User.findById({ _id: decoded.id }).select("-password");
         next();
     } catch (error) {
-        console.error("Error:", error); // Adicione este log para ver o erro
+        console.error("Error:", error);
         return res.status(401).json({ success: false, message: "Não autorizado, token falhou"});
     }
 };
