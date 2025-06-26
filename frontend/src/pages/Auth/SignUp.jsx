@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa6';
+import { useUserStore } from '../../store/userStore';
 import InputField from '../../components/InputField';
 
 const SignUp = () => {
@@ -8,12 +9,31 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { register, loading } = useUserStore();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Lógica de cadastro aqui
-    console.log('SignUp submitted:', { name, email, password, confirmPassword, acceptedTerms });
+    setError(''); // Limpa erros anteriores
+
+    // Validação de senha no frontend
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.');
+      return;
+    }
+    if (password.length < 8) {
+        setError('A senha deve ter no mínimo 8 caracteres.');
+        return;
+    }
+
+    const result = await register({ name, email, password });
+
+    if (result.success) {
+      navigate('/');
+    } else {
+      setError(result.message); // Exibe o erro retornado pela API (via store)
+    }
   };
 
   return (
@@ -52,7 +72,7 @@ const SignUp = () => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
+          placeholder="Mínimo de 8 caracteres"
           Icon={FaLock}
           required
         />
@@ -68,33 +88,15 @@ const SignUp = () => {
           required
         />
 
-        <div className="flex items-start">
-          <div className="flex items-center h-5">
-            <input
-              id="terms"
-              name="terms"
-              type="checkbox"
-              checked={acceptedTerms}
-              onChange={() => setAcceptedTerms(!acceptedTerms)}
-              className="focus:ring-[var(--color-primary)] h-4 w-4 text-[var(--color-primary)] border-gray-300 rounded"
-            />
-          </div>
-          <div className="ml-3 text-sm">
-            <label htmlFor="terms" className="font-medium text-gray-700">
-              Eu concordo com os{' '}
-              <a href="#" className="text-[var(--color-secondary)] hover:text-[var(--color-primary)]">
-                Termos e Condições
-              </a>
-            </label>
-          </div>
-        </div>
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <div>
           <button
             type="submit"
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[var(--color-secondary)] hover:bg-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-secondary)] transition cursor-pointer"
+            disabled={loading}
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[var(--color-secondary)] hover:bg-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-secondary)] transition cursor-pointer disabled:bg-gray-400"
           >
-            Cadastrar
+            {loading ? 'Cadastrando...' : 'Cadastrar'}
           </button>
         </div>
       </form>

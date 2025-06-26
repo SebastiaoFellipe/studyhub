@@ -1,14 +1,27 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useUserStore } from "../../store/userStore";
+import InputField from '../../components/InputField';
+import { FaEnvelope, FaLock } from 'react-icons/fa6';
+
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const { login, loading } = useUserStore();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Lógica de login aqui
-        console.log("Login submitted:", { email, password });
+        setError(""); // Limpa erros anteriores
+        const result = await login({ email, password });
+
+        if (result.success) {
+            navigate('/');
+        } else {
+            setError(result.message);
+        }
     };
 
     return (
@@ -21,86 +34,26 @@ const Login = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Email
-                    </label>
-                    <div className="mt-1 relative">
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                            placeholder="seu.email@exemplo.com"
-                        />
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5 text-gray-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Senha
-                    </label>
-                    <div className="mt-1 relative">
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                            placeholder="••••••••"
-                        />
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5 text-gray-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+                <InputField
+                  label="Email" id="email" type="email" value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu.email@exemplo.com" Icon={FaEnvelope} required
+                />
+                 <InputField
+                  label="Senha" id="password" type="password" value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••" Icon={FaLock} required
+                />
+                
+                {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
                 <div>
                     <button
                         type="submit"
-                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition hover:cursor-pointer"
+                        disabled={loading}
+                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition hover:cursor-pointer disabled:bg-gray-400"
                     >
-                        Entrar
+                        {loading ? "Entrando..." : "Entrar"}
                     </button>
                 </div>
             </form>
