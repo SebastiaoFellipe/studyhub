@@ -17,11 +17,11 @@ const FeatureCard = ({ icon, title, children }) => (
 
 const About = () => {
   return (
-    <div className="bg-gray-50 py-12">
+    <div className="py-12">
       <div className="container mx-auto px-6 text-center">
         
         {/* Seção Principal */}
-        <div className="max-w-4xl mx-auto">
+        <div className="bg-white p-6 rounded-lg shadow-md transition-shadow duration-300 max-w-4xl mx-auto">
           <GrBook className="text-secondary text-5xl mx-auto mb-4" />
           <h1 className="text-4xl font-extrabold text-gray-900 mb-4">Bem-vindo ao StudyHub</h1>
           <p className="text-lg text-gray-700 leading-relaxed">
@@ -30,8 +30,8 @@ const About = () => {
         </div>
 
         {/* Seção de Métodos */}
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8">Nossos Métodos e Como Utilizá-los</h2>
+        <div className= "mt-10">
+          <h2 className="text-4xl font-extrabold text-primary mb-8">Nossos Métodos e Como Utilizá-los</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             <FeatureCard 
