@@ -2,16 +2,25 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 export const protect = async (req, res, next) => {
-    let token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-        return res.status(401).json({ success: false, message: "Não autorizado, sem token"});
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = await User.findById(decoded.id).select('-password');
+            if (!req.user) {
+                 return res.status(401).json({ success: false, message: "Não autorizado, usuário não encontrado" });
+            }
+
+            next();
+        } catch (error) {
+            console.error("Erro na autenticação do token:", error);
+            res.status(401).json({ success: false, message: 'Não autorizado, token inválido' });
+        }
     }
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById({ _id: decoded.id }).select("-password");
-        next();
-    } catch (error) {
-        console.error("Error:", error);
-        return res.status(401).json({ success: false, message: "Não autorizado, token falhou"});
+
+    if (!token) {
+        res.status(401).json({ success: false, message: 'Não autorizado, token não encontrado' });
     }
 };
