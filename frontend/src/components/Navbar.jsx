@@ -28,7 +28,7 @@ const Navbar = () => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to="/flashcards" className={linkClasses}>
+                        <NavLink to="/decks" className={linkClasses}>
                             Flashcards
                         </NavLink>
                     </li>
@@ -44,7 +44,7 @@ const Navbar = () => {
                     </li>
                     {isAuthenticated ? (
                         <li>
-                            <button onClick={handleLogout} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            <button onClick={handleLogout} className="bg-accent hover:bg-accent-hover text-white font-bold py-2 px-4 rounded cursor-pointer">
                                 Sair
                             </button>
                         </li>

@@ -6,9 +6,13 @@ import Pomodoro from "./pages/Pomodoro";
 import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Flashcards from "./pages/Flashcards";
 import Notes from "./pages/Notes";
 import About from "./pages/About";
+import Decks from "./pages/Flashcard/Decks";
+import EditDeck from "./pages/Flashcard/EditDeck";
+import StudyDeck from "./pages/Flashcard/StudyDeck";
+import FreeStudy from "./pages/Flashcard/FreeStudy";
+import NotFound from "./pages/NotFound";
 
 function App() {
     return (
@@ -56,11 +60,41 @@ function App() {
                 }
             />
             <Route
-                path="/flashcards"
+                path="/decks"
                 element={
                     <ProtectedRoute>
                         <MainLayout>
-                            <Flashcards />
+                            <Decks />
+                        </MainLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/decks/:deckId/edit"
+                element={
+                    <ProtectedRoute>
+                        <MainLayout>
+                            <EditDeck />
+                        </MainLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/decks/:deckId/study"
+                element={
+                    <ProtectedRoute>
+                        <MainLayout>
+                            <StudyDeck />
+                        </MainLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/decks/:deckId/free-study"
+                element={
+                    <ProtectedRoute>
+                        <MainLayout>
+                            <FreeStudy />
                         </MainLayout>
                     </ProtectedRoute>
                 }
@@ -75,6 +109,7 @@ function App() {
                     </ProtectedRoute>
                 }
             />
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }
