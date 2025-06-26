@@ -4,12 +4,12 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/decks/:deckId/cards", protect, getCards);
-router.post("/decks/:deckId/cards", protect, createCard);
-router.put("/decks/:deckId/cards/:id", protect, updateCard);
-router.delete("/decks/:deckId/cards/:id", protect, deleteCard);
+router.get("/:deckId/cards", protect, getCards);
+router.post("/:deckId/cards", protect, createCard);
+router.put("/:deckId/cards/:id", protect, updateCard);
+router.delete("/:deckId/cards/:id", protect, deleteCard);
 
-router.get("/decks/:deckId/review", protect, getCardsToReview);
-router.post("/decks/:deckId/cards/:id/review", protect, reviewCard);
+router.get("/:deckId/review", protect, getCardsToReview);
+router.post("/:deckId/cards/:id/review", protect, reviewCard);
 
 export default router;

@@ -23,7 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/decks", flashcardDeckRoutes);
-app.use("/api", cardRoutes);
+app.use("/api/decks", cardRoutes);
 
 if (process.env.NODE_ENV === "production"){
     app.use(express.static(path.join(__dirname, "/../frontend/dist")));
