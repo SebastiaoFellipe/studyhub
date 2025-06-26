@@ -6,7 +6,9 @@ import Pomodoro from "./pages/Pomodoro";
 import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Notes from "./pages/Notes";
+import NotesList from "./pages/Notes/NotesList";
+import NoteView from "./pages/Notes/NoteView";
+import NoteEditor from "./pages/Notes/NoteEditor";
 import About from "./pages/About";
 import Decks from "./pages/Flashcard/Decks";
 import EditDeck from "./pages/Flashcard/EditDeck";
@@ -104,7 +106,37 @@ function App() {
                 element={
                     <ProtectedRoute>
                         <MainLayout>
-                            <Notes />
+                            <NotesList />
+                        </MainLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/notes/new"
+                element={
+                    <ProtectedRoute>
+                        <MainLayout>
+                            <NoteEditor />
+                        </MainLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/notes/:noteId"
+                element={
+                    <ProtectedRoute>
+                        <MainLayout>
+                            <NoteView />
+                        </MainLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/notes/:noteId/edit"
+                element={
+                    <ProtectedRoute>
+                        <MainLayout>
+                            <NoteEditor />
                         </MainLayout>
                     </ProtectedRoute>
                 }
