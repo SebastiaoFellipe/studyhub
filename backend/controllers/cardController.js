@@ -106,3 +106,83 @@ export const deleteCard = async (req, res) => {
     res.status(500).json({ success: false, message: "Erro no servidor" });
   }
 };
+
+// Função para calcular a próxima data de revisão
+const calculateNextReviewDue = (streak) => {
+    // A cada acerto, o intervalo dobra (2, 4, 8, 16... dias)
+    const daysToAdd = Math.pow(2, streak);
+    const nextDueDate = new Date();
+    nextDueDate.setDate(nextDueDate.getDate() + daysToAdd);
+    return nextDueDate;
+};
+
+// Retorna apenas os cartões prontos para revisão
+export const getCardsToReview = async (req, res) => {
+    const { deckId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(deckId)) {
+        return res.status(404).json({ success: false, message: "ID de deck inválido" });
+    }
+
+    try {
+        const deck = await FlashcardDeck.findOne({ _id: deckId, user: req.user._id });
+        if (!deck) {
+            return res.status(404).json({ success: false, message: "Deck não encontrado" });
+        }
+
+        const cardsToReview = await Card.find({
+            deck: deckId,
+            user: req.user._id,
+            nextReviewDue: { $lte: new Date() } // Apenas cartões com revisão pendente
+        }).sort({ nextReviewDue: 1 }); // Mais antigos primeiro
+
+        res.status(200).json({ success: true, data: cardsToReview });
+    } catch (error) {
+        console.error("Erro ao listar cards para revisão:", error.message);
+        res.status(500).json({ success: false, message: "Erro no servidor" });
+    }
+};
+
+// Nova função para registrar a revisão de um cartão
+export const reviewCard = async (req, res) => {
+    const { id } = req.params;
+    const { wasCorrect } = req.body; // true ou false
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ success: false, message: "ID de card inválido" });
+    }
+
+    try {
+        const card = await Card.findOne({ _id: id, user: req.user._id });
+        if (!card) {
+            return res.status(404).json({ success: false, message: "Card não encontrado" });
+        }
+
+        let updatedStreak;
+        let nextReviewDue;
+
+        if (wasCorrect) {
+            updatedStreak = card.correctStreak + 1;
+            nextReviewDue = calculateNextReviewDue(updatedStreak);
+        } else {
+            updatedStreak = 0; // Zera a sequência
+            const oneDayFromNow = new Date();
+            oneDayFromNow.setDate(oneDayFromNow.getDate() + 1);
+            nextReviewDue = oneDayFromNow;
+        }
+
+        const updatedCard = await Card.findByIdAndUpdate(
+            id,
+            {
+                lastReviewed: new Date(),
+                correctStreak: updatedStreak,
+                nextReviewDue: nextReviewDue,
+            },
+            { new: true }
+        );
+
+        res.status(200).json({ success: true, data: updatedCard });
+    } catch (error) {
+        console.error("Erro ao revisar card:", error.message);
+        res.status(500).json({ success: false, message: "Erro no servidor" });
+    }
+};
